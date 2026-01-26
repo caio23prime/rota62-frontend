@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- CONFIGURAÇÕES GERAIS --- */
+:root {
+  /* Cor de fundo estilo Portal 6: Cinza gelo suave */
+  --background-site: #f4f6f8; 
+}
+
+body {
+  background-color: var(--background-site);
+  /* Transição suave para Dark Mode */
+  @apply transition-colors duration-300;
+}
+
+/* Modo Escuro (Dark Mode) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-site: #111827; /* Cinza chumbo */
+  }
+}
+
+/* --- ANIMAÇÃO DO LETREIRO (TICKER CNN) --- */
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-marquee {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 40s linear infinite;
+}
+
+/* Pausa o letreiro quando passa o mouse para ler */
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Esconde a barra de rolagem horizontal nos menus */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

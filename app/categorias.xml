@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0"
+	xmlns:excerpt="http://wordpress.org/export/1.2/excerpt/"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:wp="http://wordpress.org/export/1.2/"
+>
+
+<channel>
+	<title>Instalação Rota62</title>
+	<pubDate>Mon, 26 Jan 2026 12:00:00 +0000</pubDate>
+	<language>pt-BR</language>
+	<wp:wxr_version>1.2</wp:wxr_version>
+	<wp:base_site_url>http://admin.rota62go.com.br</wp:base_site_url>
+	<wp:base_blog_url>http://admin.rota62go.com.br</wp:base_blog_url>
+
+    <wp:category>
+		<wp:term_id>10</wp:term_id>
+		<wp:category_nicename>politica</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[Política]]></wp:cat_name>
+	</wp:category>
+
+    <wp:category>
+		<wp:term_id>11</wp:term_id>
+		<wp:category_nicename>esporte</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[Esporte]]></wp:cat_name>
+	</wp:category>
+
+    <wp:category>
+		<wp:term_id>12</wp:term_id>
+		<wp:category_nicename>entretenimento</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[Entretenimento]]></wp:cat_name>
+	</wp:category>
+
+    <wp:category>
+		<wp:term_id>13</wp:term_id>
+		<wp:category_nicename>jornalismo</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[Jornalismo]]></wp:cat_name>
+	</wp:category>
+
+    <wp:category>
+		<wp:term_id>14</wp:term_id>
+		<wp:category_nicename>anapolis</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[Anápolis]]></wp:cat_name>
+	</wp:category>
+
+    <wp:category>
+		<wp:term_id>15</wp:term_id>
+		<wp:category_nicename>grande-goiania</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[Grande Goiânia]]></wp:cat_name>
+	</wp:category>
+
+    <wp:category>
+		<wp:term_id>16</wp:term_id>
+		<wp:category_nicename>brasil</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[Brasil]]></wp:cat_name>
+	</wp:category>
+
+    <wp:category>
+		<wp:term_id>17</wp:term_id>
+		<wp:category_nicename>mundo</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[Mundo]]></wp:cat_name>
+	</wp:category>
+
+    <wp:category>
+		<wp:term_id>18</wp:term_id>
+		<wp:category_nicename>economia</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[Economia]]></wp:cat_name>
+	</wp:category>
+
+    <wp:category>
+		<wp:term_id>19</wp:term_id>
+		<wp:category_nicename>rapidas</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[Rápidas]]></wp:cat_name>
+	</wp:category>
+
+</channel>
+</rss>
