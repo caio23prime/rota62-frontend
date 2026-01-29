@@ -21,28 +21,18 @@ body {
   }
 }
 
-/* --- ANIMAÇÃO DO LETREIRO (TICKER CNN) --- */
-@keyframes marquee {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
+/* EFEITO DE SLIDE VERTICAL */
+@keyframes slide-up-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(20px); /* Começa um pouco abaixo */
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0); /* Termina na posição certa */
+  }
 }
 
-.animate-marquee {
-  display: inline-block;
-  white-space: nowrap;
-  animation: marquee 40s linear infinite;
-}
-
-/* Pausa o letreiro quando passa o mouse para ler */
-.animate-marquee:hover {
-  animation-play-state: paused;
-}
-
-/* Esconde a barra de rolagem horizontal nos menus */
-.scrollbar-hide::-webkit-scrollbar {
-    display: none;
-}
-.scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+.animate-slide-up {
+  animation: slide-up-fade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

@@ -1,10 +1,10 @@
 {
     "weather": {
-        "temp": 20,
-        "feels": 22,
-        "humidity": 93,
-        "wind": 5,
-        "icon": "🌤️",
+        "temp": 22,
+        "feels": 24,
+        "humidity": 82,
+        "wind": 4,
+        "icon": "☁️",
         "city": "APARECIDA DE GOIÂNIA"
     },
     "alerts_pool": []
