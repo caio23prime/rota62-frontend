@@ -9,25 +9,29 @@ import Footer from '@/components/Footer';
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#f6f6f6] font-sans">
+    <main className="min-h-screen bg-[#f6f6f6] font-sans overflow-x-hidden">
       
-      {/* 1. Cabeçalho (Sem a barra de trânsito embutida, conforme seu pedido) */}
+      {/* 1. Cabeçalho */}
       <Header showExtras={false} />
       
       {/* 2. CONTAINER PRINCIPAL 
-          Mantendo sua estrutura de largura máxima e margens
+          - max-w-7xl: Limita a largura em telas gigantes (não estica infinito)
+          - mx-auto: Centraliza o site
+          - px-4: Garante margem lateral no celular (para não colar na borda)
       */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 space-y-4">
         
-        {/* === LETREIRO WAZE (Componente separado que funciona) === */}
-        <section>
+        {/* === LETREIRO WAZE === */}
+        <section className="w-full">
           <TrafficTicker />
         </section>
 
         {/* === BLOCO DE NOTÍCIAS PRINCIPAL === */}
-        <MainNewsBlock />
+        <section className="w-full">
+           <MainNewsBlock />
+        </section>
 
-        {/* --- NOVOS BLOCOS (Adicionados abaixo, dentro do mesmo alinhamento) --- */}
+        {/* --- NOVOS BLOCOS (Agora com espaçamento reduzido) --- */}
 
         {/* Bloco Roxo: Rolou na Semana */}
         <WeeklyHighlights />
@@ -43,7 +47,7 @@ export default function Home() {
       
       </div>
       
-      {/* 3. RODAPÉ VERDE (Substituindo o texto simples pelo componente real) */}
+      {/* 3. RODAPÉ */}
       <Footer />
 
     </main>

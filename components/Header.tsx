@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { Menu, X, Search, ChevronDown } from 'lucide-react';
 
-// --- ÍCONES SOCIAIS (Mantidos) ---
+// --- ÍCONES SOCIAIS ---
 const Social = {
     Facebook: () => <svg className="w-5 h-5 fill-white hover:fill-gray-200 transition-colors" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>,
     Instagram: () => <svg className="w-5 h-5 fill-white hover:fill-gray-200 transition-colors" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12s.014 3.667.072 4.947c.2 4.353 2.62 6.777 6.98 6.977 1.28.057 1.688.072 4.948.072s3.668-.015 4.948-.072c4.351-.2 6.777-2.62 6.977-6.977.058-1.28.072-1.689.072-4.948 0-3.259-.013-3.667-.072-4.947-.196-4.354-2.617-6.78-6.977-6.977C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>,
@@ -12,7 +12,7 @@ const Social = {
     YouTube: () => <svg className="w-6 h-6 fill-white hover:fill-gray-200 transition-colors" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
 };
 
-// --- ÍCONES DE CLIMA (Mantidos) ---
+// --- ÍCONES DE CLIMA ---
 const WeatherIcons = {
     ClearDay: ({ className }: { className?: string }) => (
         <svg viewBox="0 0 64 64" className={`${className || 'w-16 h-16'} drop-shadow-sm`}>
@@ -40,7 +40,12 @@ const WeatherIcons = {
     )
 };
 
-const Header = ({ showExtras = true }: { showExtras?: boolean }) => {
+// =========================================================
+// ATENÇÃO: showExtras define se a barra de trânsito interna aparece.
+// Padrão: FALSE (Para não aparecer nas categorias)
+// Na Home (page.tsx), usamos o componente <TrafficTicker /> separado.
+// =========================================================
+const Header = ({ showExtras = false }: { showExtras?: boolean }) => {
     const [viewData, setViewData] = useState<any>(null);
     const [currentDate, setCurrentDate] = useState<string>(""); 
     
@@ -53,7 +58,7 @@ const Header = ({ showExtras = true }: { showExtras?: boolean }) => {
     const toggleSearch = () => setIsSearchOpen(!isSearchOpen);
     const toggleMobileDropdown = (name: string) => setActiveDropdown(activeDropdown === name ? null : name);
 
-    // --- Lógica de distância (MANTIDA) ---
+    // --- Lógica de distância (MANTIDA para o cabeçalho verde escuro) ---
     const getDist = (lat1: number, lon1: number, lat2: number, lon2: number) => {
         const R = 6371;
         const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -70,29 +75,24 @@ const Header = ({ showExtras = true }: { showExtras?: boolean }) => {
             
             navigator.geolocation.getCurrentPosition(async (pos) => {
                 const { latitude, longitude } = pos.coords;
-                const pool = json.alerts_pool || [];
-                const filtered = pool.filter((a: any) => getDist(latitude, longitude, a.lat, a.lon) <= 10);
-                
+                // Busca apenas para o clima e cidade no topo
                 try {
                     const gRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
                     const gData = await gRes.json();
                     setViewData({
                         weather: { ...json.weather, city: (gData.address.city || gData.address.town || "GOIÂNIA").toUpperCase() },
-                        alerts: filtered.length > 0 ? filtered : pool.slice(0, 10)
+                        alerts: [] // Não precisamos dos alertas aqui se showExtras for false
                     });
                 } catch {
-                     setViewData({ weather: json.weather, alerts: pool.slice(0, 10) });
+                     setViewData({ weather: json.weather, alerts: [] });
                 }
 
-            }, () => setViewData({ weather: json.weather, alerts: json.alerts_pool.slice(0, 10) }), { enableHighAccuracy: true });
+            }, () => setViewData({ weather: json.weather, alerts: [] }), { enableHighAccuracy: true });
         } catch (e) { 
-            console.log("Modo offline ou erro ao buscar dados de clima:", e);
+            // Fallback
             setViewData({
                 weather: { temp: 28, humidity: 45, city: "GOIÂNIA" },
-                alerts: [
-                    { category: "TRÂNSITO", street: "Av. 85", city: "Goiânia", desc: "Fluxo intenso sentido centro", important: false },
-                    { category: "ACIDENTE", street: "BR-153", city: "Aparecida", desc: "Colisão leve, trânsito lento", important: true }
-                ]
+                alerts: []
             });
         }
     }, []);
@@ -151,12 +151,12 @@ const Header = ({ showExtras = true }: { showExtras?: boolean }) => {
                     
                     {/* ESQUERDA: Ícones Mobile e Busca */}
                     <div className="flex items-center space-x-6 z-40 relative">
-                        {/* Botão Sanduíche (Ativo) */}
+                        {/* Botão Sanduíche */}
                         <button onClick={toggleMobileMenu} className="lg:hidden hover:opacity-80 transition-opacity">
                             <Menu className="w-8 h-8"/>
                         </button>
                         
-                        {/* Botão Busca (Ativo) */}
+                        {/* Botão Busca */}
                         <div className="relative">
                             <button onClick={toggleSearch} className="hover:opacity-80 transition-opacity">
                                 <Search className="w-7 h-7"/>
@@ -222,7 +222,7 @@ const Header = ({ showExtras = true }: { showExtras?: boolean }) => {
                 </div>
             </nav>
 
-            {/* 4. MENU MOBILE (Sanduíche Aberto) */}
+            {/* 4. MENU MOBILE */}
             {isMobileMenuOpen && (
                 <div className="fixed inset-0 bg-black/60 z-[100] lg:hidden flex" onClick={toggleMobileMenu}>
                     <div className="bg-white w-[80%] max-w-[320px] h-full shadow-2xl p-6 flex flex-col gap-4 overflow-y-auto animate-slide-in" onClick={(e) => e.stopPropagation()}>
@@ -237,7 +237,6 @@ const Header = ({ showExtras = true }: { showExtras?: boolean }) => {
                         <Link href="/brasil" className="mobile-link">Brasil</Link>
                         <Link href="/mundo" className="mobile-link">Mundo</Link>
                         
-                        {/* Dropdown Mobile */}
                         <div className="border-b border-gray-100 py-2">
                             <button onClick={() => toggleMobileDropdown('entret')} className="flex w-full justify-between items-center font-bold text-orange-600 text-lg uppercase">
                                 Entretenimento <ChevronDown size={20} className={`transform transition-transform ${activeDropdown === 'entret' ? 'rotate-180' : ''}`}/>
@@ -262,7 +261,7 @@ const Header = ({ showExtras = true }: { showExtras?: boolean }) => {
                 </div>
             )}
 
-            {/* 5. WAZE (Mantido) */}
+            {/* 5. WAZE (Só aparece se showExtras = true) */}
             {showExtras && (
                 <>
                     <div className="max-w-7xl mx-auto px-4 mt-6 w-full relative z-10">
@@ -273,12 +272,17 @@ const Header = ({ showExtras = true }: { showExtras?: boolean }) => {
                             </div>
                             <div className="flex items-center h-full w-full">
                                 <div className="flex animate-ticker-fast items-center h-full whitespace-nowrap pl-[200px]">
-                                    {viewData.alerts.map((a: any, i: number) => (
-                                        <div key={i} className="inline-flex items-center mx-10 animate-pulse-strong">
-                                            <svg className="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill={a.category === "ACIDENTE" ? "#FF5C5C" : "#FFB900"}><path d="M12 2L1 21h22L12 2zm0 3.99L20.53 19H3.47L12 5.99z"/></svg>
-                                            <span className={`ml-3 text-[13px] font-black ${a.important ? 'text-[#FFB900]' : 'text-white'}`}>{a.category}: {a.street} ({a.city}) - {a.desc}</span>
-                                        </div>
-                                    ))}
+                                    {/* Verifica se viewData.alerts existe antes de mapear */}
+                                    {viewData.alerts && viewData.alerts.length > 0 ? (
+                                        viewData.alerts.map((a: any, i: number) => (
+                                            <div key={i} className="inline-flex items-center mx-10 animate-pulse-strong">
+                                                <svg className="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill={a.category === "ACIDENTE" ? "#FF5C5C" : "#FFB900"}><path d="M12 2L1 21h22L12 2zm0 3.99L20.53 19H3.47L12 5.99z"/></svg>
+                                                <span className={`ml-3 text-[13px] font-black ${a.important ? 'text-[#FFB900]' : 'text-white'}`}>{a.category}: {a.street} ({a.city}) - {a.desc}</span>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="inline-flex items-center mx-10 text-white font-bold text-xs">SEM ALERTAS NO MOMENTO - TRÂNSITO FLUINDO NORMALMENTE</div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -300,6 +304,8 @@ const Header = ({ showExtras = true }: { showExtras?: boolean }) => {
                 .animate-ticker-fast { animation: ticker-fast 50s linear infinite; }
                 @keyframes slide-in { from { transform: translateX(-100%); } to { transform: translateX(0); } }
                 .animate-slide-in { animation: slide-in 0.3s ease-out; }
+                @keyframes fade-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+                .animate-fade-in { animation: fade-in 0.2s ease-out; }
             `}</style>
         </div>
     );
