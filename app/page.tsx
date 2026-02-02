@@ -1,32 +1,51 @@
 import Header from '@/components/Header';
 import MainNewsBlock from '@/components/MainNewsBlock';
 import TrafficTicker from '@/components/TrafficTicker';
+import WeeklyHighlights from '@/components/WeeklyHighlights';
+import CategoryVerticalLists from '@/components/CategoryVerticalLists';
+import ServicesWidgetBlock from '@/components/ServicesWidgetBlock';
+import TopNewsNumbered from '@/components/TopNewsNumbered';
+import Footer from '@/components/Footer';
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#f6f6f6]">
-      {/* 1. Cabeçalho */}
+    <main className="min-h-screen bg-[#f6f6f6] font-sans">
+      
+      {/* 1. Cabeçalho (Sem a barra de trânsito embutida, conforme seu pedido) */}
       <Header showExtras={false} />
       
       {/* 2. CONTAINER PRINCIPAL 
-         Aqui definimos a largura máxima (max-w-7xl) e centralizamos (mx-auto).
-         Tudo aqui dentro respeita as margens.
+          Mantendo sua estrutura de largura máxima e margens
       */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 space-y-8">
         
-        {/* === LETREIRO WAZE (Agora respeita a largura do site) === */}
+        {/* === LETREIRO WAZE (Componente separado que funciona) === */}
         <section>
           <TrafficTicker />
         </section>
 
-        {/* === BLOCO DE NOTÍCIAS === */}
+        {/* === BLOCO DE NOTÍCIAS PRINCIPAL === */}
         <MainNewsBlock />
+
+        {/* --- NOVOS BLOCOS (Adicionados abaixo, dentro do mesmo alinhamento) --- */}
+
+        {/* Bloco Roxo: Rolou na Semana */}
+        <WeeklyHighlights />
+
+        {/* Listas Verticais: Radar, Esporte, Entretenimento */}
+        <CategoryVerticalLists />
+
+        {/* Widgets: Games, Agenda, Sertanejo */}
+        <ServicesWidgetBlock />
+
+        {/* Top Listas Numeradas */}
+        <TopNewsNumbered />
       
       </div>
       
-      <div className="py-10 text-center text-gray-400 text-sm">
-        Rodapé Rota 62
-      </div>
+      {/* 3. RODAPÉ VERDE (Substituindo o texto simples pelo componente real) */}
+      <Footer />
+
     </main>
   );
 }

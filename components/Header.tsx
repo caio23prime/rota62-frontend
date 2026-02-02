@@ -1,8 +1,9 @@
 'use client';
 import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
+import { Menu, X, Search, ChevronDown } from 'lucide-react';
 
-// --- ÍCONES SOCIAIS ---
+// --- ÍCONES SOCIAIS (Mantidos) ---
 const Social = {
     Facebook: () => <svg className="w-5 h-5 fill-white hover:fill-gray-200 transition-colors" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>,
     Instagram: () => <svg className="w-5 h-5 fill-white hover:fill-gray-200 transition-colors" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12s.014 3.667.072 4.947c.2 4.353 2.62 6.777 6.98 6.977 1.28.057 1.688.072 4.948.072s3.668-.015 4.948-.072c4.351-.2 6.777-2.62 6.977-6.977.058-1.28.072-1.689.072-4.948 0-3.259-.013-3.667-.072-4.947-.196-4.354-2.617-6.78-6.977-6.977C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>,
@@ -11,7 +12,7 @@ const Social = {
     YouTube: () => <svg className="w-6 h-6 fill-white hover:fill-gray-200 transition-colors" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
 };
 
-// --- ÍCONES DE CLIMA ---
+// --- ÍCONES DE CLIMA (Mantidos) ---
 const WeatherIcons = {
     ClearDay: ({ className }: { className?: string }) => (
         <svg viewBox="0 0 64 64" className={`${className || 'w-16 h-16'} drop-shadow-sm`}>
@@ -39,21 +40,20 @@ const WeatherIcons = {
     )
 };
 
-const Header = ({ showExtras = false }: { showExtras?: boolean }) => {
+const Header = ({ showExtras = true }: { showExtras?: boolean }) => {
     const [viewData, setViewData] = useState<any>(null);
     const [currentDate, setCurrentDate] = useState<string>(""); 
     
-    // --- ALTERAÇÃO AQUI: De 'Divirta-se' para 'Entretenimento' ---
-    const menuItems = [
-        { label: 'Home', slug: '/' },
-        { label: 'Brasil', slug: '/brasil' },
-        { label: 'Economia', slug: '/economia' },
-        { label: 'Mundo', slug: '/mundo' },
-        { label: 'Entretenimento', slug: '/entretenimento' }, // Alterado
-        { label: 'Esportes', slug: '/esporte' },
-        { label: 'Política', slug: '/politica' }
-    ];
+    // Estados para Mobile e Busca
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
+    const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+    const toggleSearch = () => setIsSearchOpen(!isSearchOpen);
+    const toggleMobileDropdown = (name: string) => setActiveDropdown(activeDropdown === name ? null : name);
+
+    // --- Lógica de distância (MANTIDA) ---
     const getDist = (lat1: number, lon1: number, lat2: number, lon2: number) => {
         const R = 6371;
         const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -64,7 +64,7 @@ const Header = ({ showExtras = false }: { showExtras?: boolean }) => {
 
     const syncPortal = useCallback(async () => {
         try {
-            const res = await fetch('/data/traffic_weather_data.json');
+            const res = await fetch('/waze_data.json');
             if (!res.ok) throw new Error("Arquivo JSON não encontrado");
             const json = await res.json();
             
@@ -88,7 +88,7 @@ const Header = ({ showExtras = false }: { showExtras?: boolean }) => {
         } catch (e) { 
             console.log("Modo offline ou erro ao buscar dados de clima:", e);
             setViewData({
-                weather: { temp: 28, feels: 30, wind: 12, humidity: 45, city: "GOIÂNIA" },
+                weather: { temp: 28, humidity: 45, city: "GOIÂNIA" },
                 alerts: [
                     { category: "TRÂNSITO", street: "Av. 85", city: "Goiânia", desc: "Fluxo intenso sentido centro", important: false },
                     { category: "ACIDENTE", street: "BR-153", city: "Aparecida", desc: "Colisão leve, trânsito lento", important: true }
@@ -126,6 +126,7 @@ const Header = ({ showExtras = false }: { showExtras?: boolean }) => {
     return (
         <div className="w-full flex flex-col font-sans bg-[#f6f6f6] overflow-x-hidden">
             
+            {/* 1. BARRA VERDE ESCURA (DATA E CLIMA) */}
             <div className="w-full bg-[#127015] py-2 text-white border-b border-white/5 flex justify-center items-center gap-4 text-[10px] md:text-xs">
                 <span className="font-black uppercase tracking-widest leading-none">
                     {currentDate || "CARREGANDO..."}
@@ -144,51 +145,133 @@ const Header = ({ showExtras = false }: { showExtras?: boolean }) => {
                 </div>
             </div>
 
+            {/* 2. HEADER VERDE PRINCIPAL */}
             <header className="w-full bg-[#168a1a] text-white py-8 md:py-10 shadow-md">
                 <div className="max-w-7xl mx-auto px-4 flex items-center justify-between relative h-20">
-                    <div className="flex items-center space-x-8 z-40 relative">
-                        <svg className="w-8 h-8 cursor-pointer fill-none stroke-current hover:opacity-80" viewBox="0 0 24 24" strokeWidth="3"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-                        <svg className="w-7 h-7 cursor-pointer fill-none stroke-current hover:opacity-80" viewBox="0 0 24 24" strokeWidth="3"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    
+                    {/* ESQUERDA: Ícones Mobile e Busca */}
+                    <div className="flex items-center space-x-6 z-40 relative">
+                        {/* Botão Sanduíche (Ativo) */}
+                        <button onClick={toggleMobileMenu} className="lg:hidden hover:opacity-80 transition-opacity">
+                            <Menu className="w-8 h-8"/>
+                        </button>
+                        
+                        {/* Botão Busca (Ativo) */}
+                        <div className="relative">
+                            <button onClick={toggleSearch} className="hover:opacity-80 transition-opacity">
+                                <Search className="w-7 h-7"/>
+                            </button>
+                            {/* Input de Busca Flutuante */}
+                            {isSearchOpen && (
+                                <div className="absolute top-10 left-0 bg-white p-2 rounded shadow-lg flex items-center gap-2 w-64 animate-fade-in z-50">
+                                    <input 
+                                        type="text" 
+                                        placeholder="Buscar..." 
+                                        className="text-gray-800 text-sm p-1 outline-none w-full"
+                                        autoFocus
+                                    />
+                                    <button onClick={toggleSearch}><X size={16} className="text-gray-500"/></button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                     
+                    {/* CENTRO: LOGO (Imagem) */}
                     <div className="absolute left-1/2 -translate-x-1/2 z-30 top-1/2 -translate-y-1/2">
                         <Link href="/">
                             <img src="/logo-claro.png" alt="Rota 62" className="h-20 md:h-28 w-auto object-contain hover:scale-105 transition-transform" />
                         </Link>
                     </div>
 
+                    {/* DIREITA: REDES SOCIAIS */}
                     <div className="hidden lg:flex items-center space-x-5 z-40 relative">
                         <Social.Facebook /><Social.Instagram /><Social.Threads /><Social.X /><Social.YouTube />
                     </div>
                 </div>
             </header>
 
-            <nav className="w-full bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50 overflow-x-auto">
-                <div className="max-w-7xl mx-auto px-4 flex justify-center py-4 min-w-max">
-                    <ul className="flex space-x-8 md:space-x-12">
-                        {menuItems.map((item) => (
-                            <li key={item.label}>
-                                <Link 
-                                    href={item.slug} 
-                                    className="text-[13px] md:text-[14px] font-black uppercase text-gray-800 hover:text-[#168a1a] cursor-pointer whitespace-nowrap transition-colors"
-                                >
-                                    {item.label}
-                                </Link>
-                            </li>
-                        ))}
+            {/* 3. MENU DE NAVEGAÇÃO BRANCO (Desktop) */}
+            <nav className="hidden lg:block w-full bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
+                <div className="max-w-7xl mx-auto px-4 flex justify-center py-4">
+                    <ul className="flex items-center space-x-8 md:space-x-10">
+                        <li><Link href="/" className="nav-link">Home</Link></li>
+                        <li><Link href="/radar-goias" className="nav-link">Radar Goiás</Link></li>
+                        <li><Link href="/mundo" className="nav-link">Mundo</Link></li>
+                        <li><Link href="/brasil" className="nav-link">Brasil</Link></li>
+                        <li><Link href="/politica" className="nav-link">Política</Link></li>
+                        <li><Link href="/economia" className="nav-link">Economia</Link></li>
+
+                        {/* Dropdown Entretenimento */}
+                        <li className="relative group z-50">
+                            <button className="nav-link flex items-center gap-1 hover:text-orange-500 group-hover:text-orange-500">
+                                Entretenimento <ChevronDown size={14} />
+                            </button>
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 pt-4 hidden group-hover:block w-56">
+                                <div className="bg-white text-gray-800 shadow-xl rounded-b-md border-t-4 border-[#06aa48] flex flex-col py-2">
+                                    <Link href="/eventos" className="dropdown-item">Eventos</Link>
+                                    <Link href="/backstage-geek" className="dropdown-item">Backstage Geek</Link>
+                                    <Link href="/games" className="dropdown-item text-xs text-gray-500 pl-8 font-bold">↳ Games</Link>
+                                    <Link href="/sertanejo-e-meio" className="dropdown-item">Sertanejo & 1/2</Link>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li><Link href="/esporte" className="nav-link">Esporte</Link></li>
+                        <li><Link href="/auto-tech" className="nav-link">Auto & Tech</Link></li>
                     </ul>
                 </div>
             </nav>
 
+            {/* 4. MENU MOBILE (Sanduíche Aberto) */}
+            {isMobileMenuOpen && (
+                <div className="fixed inset-0 bg-black/60 z-[100] lg:hidden flex" onClick={toggleMobileMenu}>
+                    <div className="bg-white w-[80%] max-w-[320px] h-full shadow-2xl p-6 flex flex-col gap-4 overflow-y-auto animate-slide-in" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex justify-between items-center border-b pb-4 mb-2">
+                             <span className="font-black text-[#06aa48] text-xl tracking-tight">MENU</span>
+                             <button onClick={toggleMobileMenu}><X className="text-gray-500 w-8 h-8"/></button>
+                        </div>
+                        
+                        <Link href="/" className="mobile-link">Home</Link>
+                        <Link href="/radar-goias" className="mobile-link">Radar Goiás</Link>
+                        <Link href="/politica" className="mobile-link text-blue-700">Política</Link>
+                        <Link href="/brasil" className="mobile-link">Brasil</Link>
+                        <Link href="/mundo" className="mobile-link">Mundo</Link>
+                        
+                        {/* Dropdown Mobile */}
+                        <div className="border-b border-gray-100 py-2">
+                            <button onClick={() => toggleMobileDropdown('entret')} className="flex w-full justify-between items-center font-bold text-orange-600 text-lg uppercase">
+                                Entretenimento <ChevronDown size={20} className={`transform transition-transform ${activeDropdown === 'entret' ? 'rotate-180' : ''}`}/>
+                            </button>
+                            {activeDropdown === 'entret' && (
+                                <div className="flex flex-col gap-3 mt-3 pl-4 border-l-2 border-orange-100">
+                                    <Link href="/eventos" className="text-gray-600 font-bold text-sm">Eventos</Link>
+                                    <Link href="/backstage-geek" className="text-gray-600 font-bold text-sm">Backstage Geek</Link>
+                                    <Link href="/games" className="text-gray-500 font-bold text-xs pl-2">↳ Games</Link>
+                                    <Link href="/sertanejo-e-meio" className="text-gray-600 font-bold text-sm">Sertanejo & 1/2</Link>
+                                </div>
+                            )}
+                        </div>
+
+                        <Link href="/esporte" className="mobile-link text-green-700">Esporte</Link>
+                        <Link href="/auto-tech" className="mobile-link">Auto & Tech</Link>
+                        
+                        <div className="mt-auto pt-6 border-t flex gap-4 justify-center">
+                             <Social.Instagram /><Social.Facebook />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* 5. WAZE (Mantido) */}
             {showExtras && (
                 <>
-                    <div className="max-w-7xl mx-auto px-4 mt-6 w-full relative">
-                        <div className="w-full bg-black flex items-stretch h-10 shadow-xl border border-white/5 relative">
-                            <div className="absolute left-0 top-0 bottom-0 flex items-center gap-2 bg-[#33CCFF] text-white px-5 text-[11px] font-black uppercase z-20 shadow-[10px_0_20px_rgba(0,0,0,0.5)]">
+                    <div className="max-w-7xl mx-auto px-4 mt-6 w-full relative z-10">
+                        <div className="w-full bg-black flex items-stretch h-10 shadow-xl border border-white/5 relative overflow-hidden">
+                            <div className="absolute left-0 top-0 bottom-0 flex items-center gap-2 bg-[#d32f2f] text-white px-5 text-[11px] font-black uppercase z-20 shadow-[10px_0_20px_rgba(0,0,0,0.5)]">
                                 <span className="leading-none mt-[1px]">Trânsito ao vivo</span>
-                                <div className="w-2.5 h-2.5 bg-red-600 animate-pulse shadow-[0_0_8px_rgba(220,38,38,0.8)] border border-white/20"></div>
+                                <div className="w-2.5 h-2.5 bg-white animate-pulse rounded-full border border-black/10"></div>
                             </div>
-                            <div className="flex items-center h-full w-full overflow-hidden">
+                            <div className="flex items-center h-full w-full">
                                 <div className="flex animate-ticker-fast items-center h-full whitespace-nowrap pl-[200px]">
                                     {viewData.alerts.map((a: any, i: number) => (
                                         <div key={i} className="inline-flex items-center mx-10 animate-pulse-strong">
@@ -210,12 +293,13 @@ const Header = ({ showExtras = false }: { showExtras?: boolean }) => {
             )}
 
             <style jsx global>{`
+                .nav-link { @apply text-[14px] font-black uppercase text-gray-800 hover:text-[#168a1a] cursor-pointer whitespace-nowrap transition-colors; }
+                .dropdown-item { @apply px-4 py-3 hover:bg-gray-50 hover:text-[#06aa48] block text-[13px] uppercase font-bold text-gray-700 transition-colors; }
+                .mobile-link { @apply block py-3 border-b border-gray-50 font-black text-lg text-gray-700 uppercase tracking-tight hover:text-[#168a1a] transition-colors; }
                 @keyframes ticker-fast { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
                 .animate-ticker-fast { animation: ticker-fast 50s linear infinite; }
-                @keyframes pulse-strong { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.95); } }
-                .animate-pulse-strong { animation: pulse-strong 1.4s ease-in-out infinite; }
-                nav::-webkit-scrollbar { display: none; }
-                nav { -ms-overflow-style: none; scrollbar-width: none; }
+                @keyframes slide-in { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+                .animate-slide-in { animation: slide-in 0.3s ease-out; }
             `}</style>
         </div>
     );
