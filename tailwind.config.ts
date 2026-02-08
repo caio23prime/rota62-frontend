@@ -13,8 +13,8 @@ const config: Config = {
         foreground: "var(--foreground)",
       },
       fontFamily: {
-        sans: ['var(--font-texto)', 'sans-serif'],
-        manchete: ['var(--font-manchete)', 'sans-serif'],
+        sans: ['var(--font-roboto)', 'sans-serif'], // Main site (Roboto)
+        playfair: ['var(--font-playfair)', 'serif'], // Pilot Rebrand (Playfair)
       },
       animation: {
         marquee: 'marquee 40s linear infinite',
@@ -27,6 +27,6 @@ const config: Config = {
       }
     },
   },
-  plugins: [], // <--- DEIXEI VAZIO (Sem plugin, sem erro)
+  plugins: [],
 };
 export default config;

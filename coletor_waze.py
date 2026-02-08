@@ -80,18 +80,58 @@ def traduzir(tipo, subtipo, nivel=0):
         
     return None, 0, ""
 
+def detectar_sentido(rua, bairro_detectado):
+    """Detecta se o fluxo é sentido centro ou bairro baseado em palavras-chave"""
+    rua_lower = rua.lower() if rua else ""
+    
+    # Palavras que indicam sentido centro
+    palavras_centro = ["centro", "downtown", "setor central", "praça cívica"]
+    # Palavras que indicam sentido bairro
+    palavras_bairro = ["bairro", "setor", "jardim", "vila", "parque", "residencial"]
+    
+    for palavra in palavras_centro:
+        if palavra in rua_lower:
+            return "sentido Centro"
+    
+    for palavra in palavras_bairro:
+        if palavra in rua_lower and bairro_detectado:
+            return f"sentido {bairro_detectado}"
+    
+    # Se não detectou, tenta inferir pelo bairro
+    if bairro_detectado and bairro_detectado.lower() != "centro":
+        return f"sentido {bairro_detectado}"
+    
+    return None
+
 def formatar_texto_inteligente(rua, descricao, perto_de, bairro_detectado):
+    """Formata texto completo e informativo para os alertas"""
     texto_base = ""
-    if rua and len(rua) > 2: texto_base = rua
-    elif perto_de: texto_base = f"Próximo a {perto_de}"
-    elif bairro_detectado: texto_base = f"Via no {bairro_detectado}"
-    else: return None
-
-    if bairro_detectado and bairro_detectado not in texto_base:
+    
+    # Prioriza o nome completo da rua (sem abreviar)
+    if rua and len(rua) > 2:
+        texto_base = rua
+    elif perto_de:
+        texto_base = f"Próximo a {perto_de}"
+    elif bairro_detectado:
+        texto_base = f"Via no {bairro_detectado}"
+    else:
+        return None
+    
+    # Adiciona bairro se não estiver no texto
+    if bairro_detectado and bairro_detectado.lower() not in texto_base.lower():
         texto_base += f" ({bairro_detectado})"
-    if descricao and descricao not in texto_base and len(descricao) < 40:
-        texto_base += f" | {descricao}"
-
+    
+    # Detecta e adiciona sentido
+    sentido = detectar_sentido(rua, bairro_detectado)
+    if sentido:
+        texto_base += f" - {sentido}"
+    
+    # Adiciona descrição adicional se houver e for relevante
+    if descricao and descricao not in texto_base and len(descricao) < 60:
+        # Remove redundâncias comuns
+        if not any(palavra in descricao.lower() for palavra in ['acidente', 'congestionamento', 'obra', 'perigo']):
+            texto_base += f" | {descricao}"
+    
     return texto_base
 
 def capturar_waze():
@@ -168,14 +208,38 @@ def capturar_waze():
             if caminho: bairro = descobrir_bairro(caminho[0].get('y'), caminho[0].get('x'))
             
             rua = item.get('street', '').strip()
-            if not rua and bairro: rua = f"Trânsito no {bairro}"
-            elif not rua: continue
+            if not rua and bairro: 
+                rua = f"Trânsito no {bairro}"
+            elif not rua: 
+                continue
             
+            # Monta texto completo com sentido
             texto_final = rua
-            if bairro and bairro not in rua: texto_final += f" ({bairro})"
-            if item.get('endNode'): texto_final += f" > Sentido {item.get('endNode')}"
+            
+            # Adiciona bairro se não estiver no nome da rua
+            if bairro and bairro.lower() not in rua.lower():
+                texto_final += f" ({bairro})"
+            
+            # Detecta e adiciona sentido
+            sentido = detectar_sentido(rua, bairro)
+            if sentido:
+                texto_final += f" - {sentido}"
+            elif item.get('endNode'):
+                # Se não detectou automaticamente, usa o endNode do Waze
+                texto_final += f" - sentido {item.get('endNode')}"
+            
+            # Adiciona informação de atraso
+            atraso_texto = f"+{math.ceil(delay/60)} min"
 
-            lista_waze.append({"id": item.get('uuid'), "titulo": tit, "texto": texto_final, "atraso": f"+{math.ceil(delay/60)} min", "prioridade": prior, "corTitulo": cor, "origem": "waze"})
+            lista_waze.append({
+                "id": item.get('uuid'), 
+                "titulo": tit, 
+                "texto": texto_final, 
+                "atraso": atraso_texto, 
+                "prioridade": prior, 
+                "corTitulo": cor, 
+                "origem": "waze"
+            })
             ids_vistos.add(item.get('uuid'))
 
     return lista_waze

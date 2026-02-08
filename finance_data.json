@@ -1,0 +1,53 @@
+{
+    "atualizacao": "08/02/2026 10:04",
+    "mercado": [
+        {
+            "name": "Dólar",
+            "value": "R$ 5,22",
+            "change": "-1,04%",
+            "trend": "down",
+            "graph": [
+                4.9,
+                4.95,
+                5.0,
+                5.02
+            ]
+        },
+        {
+            "name": "Euro",
+            "value": "R$ 6,19",
+            "change": "0,55%",
+            "trend": "up",
+            "graph": [
+                5.4,
+                5.3,
+                5.35,
+                5.4
+            ]
+        },
+        {
+            "name": "Boi Gordo",
+            "value": "R$ 312,00/@",
+            "change": "+0,5%",
+            "trend": "up",
+            "graph": [
+                300,
+                305,
+                310,
+                312
+            ]
+        },
+        {
+            "name": "Bitcoin",
+            "value": "R$ 373.147,00",
+            "change": "2,96%",
+            "trend": "up",
+            "graph": [
+                300000,
+                310000,
+                305000,
+                320000
+            ]
+        }
+    ]
+}

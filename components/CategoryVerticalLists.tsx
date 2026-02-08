@@ -8,10 +8,19 @@ const CategoryVerticalLists = () => {
   
   const WP_URL = process.env.NEXT_PUBLIC_WORDPRESS_URL || 'https://admin.rota62go.com.br';
 
-  // Função helper de fetch
   const getCat = async (slug: string) => {
     try {
-        const res = await fetch(`${WP_URL}/wp-json/wp/v2/posts?_embed&per_page=5&category_name=${slug}`);
+        // 1. Fetch Category ID by Slug
+        const catRes = await fetch(`${WP_URL}/wp-json/wp/v2/categories?slug=${slug}`);
+        if (!catRes.ok) return [];
+        const catData = await catRes.json();
+        
+        if (catData.length === 0) return []; 
+        
+        const catId = catData[0].id;
+
+        // 2. Fetch Posts by Category ID
+        const res = await fetch(`${WP_URL}/wp-json/wp/v2/posts?_embed&per_page=5&categories=${catId}`);
         return res.ok ? await res.json() : [];
     } catch { return []; }
   };
@@ -49,9 +58,9 @@ const CategoryVerticalLists = () => {
   return (
     <section className="w-full max-w-[1280px] mx-auto px-4 py-10 border-b border-gray-200">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            <Column title="Radar Goiás" color="#e02e1f" posts={goias} />
-            <Column title="Esporte" color="#06aa48" posts={esporte} />
-            <Column title="Entretenimento" color="#e07e1f" posts={entret} />
+            <Column title="Radar Goiás" color="#DC2626" posts={goias} />
+            <Column title="Esporte" color="#65A30D" posts={esporte} />
+            <Column title="Entretenimento" color="#F97316" posts={entret} />
         </div>
     </section>
   );
